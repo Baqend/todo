@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Todo App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- build:css all.min.css -->
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- /build -->
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <ul class="nav nav-pills pull-right">
+        <li><a href="#" data-toggle="modal" data-target="#share">Share List <span class="glyphicon glyphicon-share"></span></a></li>
+      </ul>
+      <h3>Toodle <small class="hidden-xs">The Time-Tracking Todo List</small></h3>
+    </div>
+
+    <div class="marketing">
+      <!-- The button group to change visibility of Todos -->
+      <div class="btn-group btn-group-justified" data-toggle="buttons">
+        <label class="btn btn-primary active">
+          <input type="radio" onchange="TodoController.showUnfinished()" autocomplete="off" checked>Unfinished
+        </label>
+        <label class="btn btn-primary">
+          <input type="radio" onchange="TodoController.showDone()" autocomplete="off">Done
+        </label>
+        <label class="btn btn-primary">
+          <input type="radio" onchange="TodoController.showAll()" autocomplete="off">All
+        </label>
+      </div>
+
+      <!-- The container for the actual Todo list generated from the template -->
+      <div id="todos"></div>
+    </div>
+    <div class="footer"><p>Baqend Tutorial</p></div>
+
+    <!-- Sharing dialog -->
+    <div class="modal fade" id="share" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header"><h4 class="modal-title">Share this list</h4></div>
+          <div class="modal-body">
+            <p>To share this list copy the following URL and send it to someone:</p>  
+            <input type="text" class="form-control" type="text" id="shareURL">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Template-->
+  <script id="todo-template" type="text/x-handlebars-template">
+    <div class="panel-group" id="tablist">
+      <!-- Iterate over each Todo item -->
+      {{#each todos}}
+      <div class="panel panel-default {{#if active}}active{{/if}} {{#if done}}done{{/if}}">
+
+        <!-- Shows the buttons on the right -->
+        <div class="btn-group pull-right">
+          {{#if done}}
+          <button type="button" onclick="TodoController.delete('{{id}}')" class="btn btn-danger">
+            <span class="glyphicon glyphicon-trash"></span>
+          </button>
+          {{else}}
+          <button type="button" onclick="TodoController.toggleWork('{{id}}')" class="btn {{#if active}}btn-warning{{else}}start{{/if}}">
+            <span class="glyphicon {{#if active}}glyphicon-remove{{else}}glyphicon-circle-arrow-right{{/if}}"></span> {{#if active}}Stop{{else}}Start{{/if}} <span class="hidden-xs">Work</span>
+          </button>
+          <button type="button" onclick="TodoController.done('{{id}}')" class="btn btn-success">
+            <span class="glyphicon glyphicon-ok"></span>
+          </button>
+          {{/if}}
+        </div>
+
+        <!-- The name of each Todo -->
+        <div class="panel-heading">
+          <h4 class="panel-title">
+          <a class="collapsed" data-toggle="collapse" data-parent="#tablist" href="#{{id}}">{{name}}</a>
+        </h4>
+        </div>
+
+        <!-- The collapsible list of all past activities-->
+        <div id="{{id}}" class="panel-collapse collapse clear">
+          <div class="panel-body">
+            <table class="table table-condensed table-striped">
+              <tr><th>From</th><th>To</th><th>Time spent</th></tr>
+              {{#each activities.array}}
+              <tr>
+                <td>{{pretty start}}</td>
+                <td>{{pretty end}}</td>
+                <td><strong>{{diff start end}}</strong>
+                </td>
+              </tr>
+              {{/each}}
+            </table>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    <!-- Only show the input for new Todos in the "Unfinished" view -->
+    {{#if isUnfinished}}
+    <form id="addTodo" onsubmit="TodoController.add(this.insert.value); return false;" autocomplete="off" class="insert-todo">
+      <input required tabindex="1" data-toggle="collapse" data-target=".collapse.in" class="form-control" type="text" placeholder="New Todo" name="insert" id="typing"/>
+    </form>
+    {{/if}}
+  </script>
+  
+  <!-- build:js all.min.js -->
+  <script type="text/javascript" src="http://baqend.com/js-sdk/latest/baqend.min.js"></script>
+  <script type="text/javascript" src="libs/js/handlebars.min.js"></script>
+  <script type="text/javascript" src="libs/js/fastclick.min.js"></script>
+  <script type="text/javascript" src="libs/js/jquery.min.js"></script>
+  <script type="text/javascript" src="libs/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="app.js"></script>
+  <!-- /build -->
+
+  <!-- build:js:iframe inline typed.js --><!-- /build -->
+
+</body>
+</html>
