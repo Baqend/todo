@@ -1,4 +1,4 @@
-Baqend Todo-App
+Baqend ToDo-App
 ============
 
 ![Baqend.com](http://www.baqend.com/guide/img/baqend_logo.svg)
@@ -9,6 +9,13 @@ Read the [Baqend Guide](http://www.baqend.com/guide/) online
 
 Do you have questions, a future request or did you find a bug? Open a [ticket](https://github.com/Baqend/todo/issues). 
 
+Installation
+-------
+
+    npm install -g grunt-cli
+    git clone https://github.com/Baqend/todo.git .
+    npm install
+    grunt
 
 License
 -------
