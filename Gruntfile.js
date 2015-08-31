@@ -38,6 +38,10 @@ module.exports = function(grunt) {
     },
 
     processhtml: {
+      options: {
+        "strip": true
+      },
+
       dist: {
         files: {
           'dist/index.html': ['index.html']
@@ -45,7 +49,7 @@ module.exports = function(grunt) {
       },
       iframe: {
         files: {
-          'dist/index.html': ['index.html']
+          'dist/iframe.html': ['index.html']
         }
       }
     },
