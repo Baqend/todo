@@ -8,7 +8,7 @@ function typeAndAdd(text, next) {
     return;
   $('#typing').typed({
     strings: [text],
-    typeSpeed: 100,
+    typeSpeed: 0,
     onStringTyped: function() {
       var item = $("#typing").val();
       if (item != "" && !abortTyping) {
@@ -22,10 +22,10 @@ function typeAndAdd(text, next) {
 
 DB.ready(function() {
   setTimeout(function() {
-    typeAndAdd("Learn Baqend", function() {
-      typeAndAdd("Take the tutorial", function() {
-        typeAndAdd("Build a lightning-fast app");
+    typeAndAdd("This app is built on Baqend", function() {
+      typeAndAdd("Try for yourself", function() {
+        typeAndAdd("Using our new Cloud Service");
       });
     });
-  }, 1500);
+  }, 1300);
 });
