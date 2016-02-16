@@ -1,5 +1,5 @@
 //Let's connect to our Baqend
-DB.connect("http://tutorial.baqend.com");
+DB.connect("toodle");
 
 //The TodoService handles access to persistent Todo items
 var TodoService = (function() {
@@ -123,18 +123,22 @@ var TodoController = (function() {
     },
     //Sets up the template and renders
     onReady: function() {
-      var hash = window.location.hash;
+      var hash = location.hash;
       if(hash != '' && hash != '#') {
+        hash = hash.substring(1);
+        if (hash == listId)
+          return;
         listId = hash;
-      } else if(localStorage["listId"]) {
+      } else if (localStorage["listId"]) {
         listId = localStorage["listId"];
       } else {
         listId = DB.util.uuid();
         localStorage["listId"] = listId;
       }
-      window.location.hash = listId;
+
+      location.hash = listId;
       $(window).on('hashchange', ctrl.onReady);
-      $("#shareURL").val(window.location);
+      $("#shareURL").val(location);
       var source = $('#todo-template').html();
       template = Handlebars.compile(source);
       ctrl.showUnfinished();
