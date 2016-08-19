@@ -12,7 +12,7 @@ module.exports = function(grunt) {
           hostname: '*',
           port: 8050,
           open: 'http://127.0.0.1:8050/index.html',
-          base: '.',
+          base: ['.tmp','.'],
           livereload: true
         }
       }
@@ -26,13 +26,34 @@ module.exports = function(grunt) {
       css: {
         files: ['*'],
         tasks: []
+      },
+      js : {
+        files: ['app.js'],
+        tasks: ['babel:dev']
+      }
+    },
+
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['es2015']
+      },
+      dist: {
+        files: {
+          'dist/app.js': 'app.js'
+        }
+      },
+      dev: {
+        files: {
+          '.tmp/app.js': 'app.js'
+        }
       }
     },
 
     uglify: {
       dist: {
         files: {
-          'dist/all.min.js': ['libs/js/jquery.min.js', 'libs/js/*.js', 'app.js']
+          'dist/all.min.js': ['libs/js/jquery.min.js', 'libs/js/*.js', 'dist/app.js']
         }
       }
     },
@@ -76,18 +97,13 @@ module.exports = function(grunt) {
 
   });
 
+require('load-grunt-tasks')(grunt); // npm install --save-dev load-grunt-tasks
 
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-processhtml');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-clean');
 
   grunt.registerTask('dist', [
     'clean:dist',
-    'uglify:dist', 
+    'babel:dist',
+    'uglify:dist',
     'cssmin:dist',
     'processhtml:dist',
     'copy:dist'
@@ -99,6 +115,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('default', [
+    'babel:dev',
     'connect',
     'watch'
   ]);

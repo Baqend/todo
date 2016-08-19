@@ -1,155 +1,156 @@
-//Let's connect to our Baqend
-DB.connect("toodle");
-
 //The TodoService handles access to persistent Todo items
-var TodoService = (function() {
-  return {
-    //load all Todos ordered by completion and name
-    all: function(listId) {
-      return DB.Todo.find()
+class TodoService {
+  //load all Todos ordered by completion and name
+  static all(listId) {
+    return DB.Todo.find()
         .equal("listId", listId)
         .ascending("done")
         .ascending("name")
         .resultList();
-    },
-    //load unfinished Todos
-    unfinished: function(listId) {
-      return DB.Todo.find()
+  }
+
+  //load unfinished Todos
+  static unfinished(listId) {
+    return DB.Todo.find()
         .equal("listId", listId)
         .notEqual("done", true)
         .resultList();
-    },
-    //load finished Todos
-    done: function(listId) {
-      return DB.Todo.find()
+  }
+
+  //load finished Todos
+  static done(listId) {
+    return DB.Todo.find()
         .equal("listId", listId)
         .equal("done", true)
         .resultList();
-    },
-    //delete a Todo
-    delete: function(todo) {
-      todo.delete();
-    },
-    //save a Todo
-    save: function(todo) {
-      todo.save();
-    }
   }
-})();
+
+  //delete a Todo
+  static delete(todo) {
+    todo.delete();
+  }
+
+  //save a Todo
+  static save(todo) {
+    todo.save();
+  }
+}
 
 //The controller does event handling and rendering, passing todos between view and service
-var TodoController = (function() {
-  var state = {}, template, listId;
+class TodoCtrl {
+  constructor() {
+    this.todos = {};
+    this.isUnfinished = false;
+    this.template = null;
+    this.listId = null;
+  }
 
   //Updates the list of loaded Todos
-  var updateState = function(toSave) {
-    state.todos = {};
-    toSave.forEach(function(todo) {
-      state.todos[todo.id] = todo;
+  updateLocal(toSave) {
+    this.todos = {};
+    toSave.forEach((todo) => this.todos[todo.id] = todo);
+    this.render();
+  }
+
+  //Shows all Todos
+  showAll() {
+    this.isUnfinished = false;
+    TodoService.all(this.listId).then((todos) => this.updateLocal(todos));
+  }
+
+  //Shows unfinished Todos
+  showUnfinished() {
+    this.isUnfinished = true;
+    TodoService.unfinished(this.listId).then((todos) => this.updateLocal(todos));
+  }
+
+  //Shows completed Todos
+  showDone() {
+    this.isUnfinished = false;
+    TodoService.done(this.listId).then((todos) => this.updateLocal(todos));
+  }
+
+  //Deletes a Todo by id
+  delete(id) {
+    TodoService.delete(this.todos[id]);
+    delete this.todos[id];
+    this.render();
+  }
+
+  //Marks a Todo as done
+  done(id) {
+    this.todos[id].done = true;
+    TodoService.save(this.todos[id]);
+    if (this.isUnfinished)
+      delete this.todos[id];
+    this.render();
+  }
+
+  //Adds a new Todo by name
+  add(name) {
+    var todo = new DB.Todo({
+      activities: new DB.List(),
+      name: name,
+      listId: this.listId
     });
-  };
-  //Repaints the TodoList
-  var render = function() {
-    var open = $('.in').attr('id');
-    $('#todos').html(template(state));
-    $('#' + open).addClass('in');
-  };
+    TodoService.save(todo);
+    this.todos[todo.id] = todo;
+    this.render();
+  }
 
-
-  var ctrl = {
-    //Shows all Todos
-    showAll: function() {
-      state.isUnfinished = false;
-      TodoService.all(listId).then(updateState).then(render);
-    },
-    //Shows unfinished Todos
-    showUnfinished: function() {
-      state.isUnfinished = true;
-      TodoService.unfinished(listId).then(updateState).then(render);
-    },
-    //Shows completed Todos
-    showDone: function() {
-      state.isUnfinished = false;
-      TodoService.done(listId).then(updateState).then(render);
-    },
-    //Deletes a Todo by id
-    delete: function(id) {
-      TodoService.delete(state.todos[id]);
-      delete state.todos[id];
-      render();
-    },
-    //Marks a Todo as done
-    done: function(id) {
-      state.todos[id].done = true;
-      TodoService.save(state.todos[id]);
-      if (state.isUnfinished)
-        delete state.todos[id];
-      render();
-    },
-    //Adds a new Todo by name
-    add: function(name) {
-      var todo = new DB.Todo({
-        activities: new DB.List(),
-        name: name,
-        listId : listId
-      });
-      TodoService.save(todo);
-      state.todos[todo.id] = todo;
-      render();
-    },
-    addTransient: function(name) {
-      var todo = new DB.Todo({
-        activities: new DB.List(),
-        name: name,
-        listId : listId
-      });
-      DB.attach(todo);
-      state.todos[todo.id] = todo;
-      render();
-    },
-    //Starts or stops work on a Todo
-    toggleWork: function(id) {
-      var todo = state.todos[id];
-      todo.active = !todo.active;
-      if (todo.active) {
-        todo.activities.unshift(new DB.Activity({
-          start: new Date()
-        }));
-       } else {
-        todo.activities.get(0).end = new Date();
-      }
-      TodoService.save(todo);
-      render();
-    },
-    //Sets up the template and renders
-    onReady: function() {
-      var hash = location.hash;
-      if(hash != '' && hash != '#') {
-        hash = hash.substring(1);
-        if (hash == listId)
-          return;
-        listId = hash;
-      } else if (localStorage["listId"]) {
-        listId = localStorage["listId"];
-      } else {
-        listId = DB.util.uuid();
-        localStorage["listId"] = listId;
-      }
-
-      location.hash = listId;
-      $(window).on('hashchange', ctrl.onReady);
-      $("#shareURL").val(location);
-      var source = $('#todo-template').html();
-      template = Handlebars.compile(source);
-      ctrl.showUnfinished();
+  //Starts or stops work on a Todo
+  toggleWork(id) {
+    var todo = this.todos[id];
+    todo.active = !todo.active;
+    if (todo.active) {
+      todo.activities.unshift(new DB.Activity({
+        start: new Date()
+      }));
+    } else {
+      todo.activities[0].end = new Date();
     }
-  };
+    TodoService.save(todo);
+    this.render();
+  }
 
-  return ctrl;
-})();
+  //Repaints the TodoList
+  render() {
+    var open = $('.in').attr('id');
+    $('#todos').html(this.template({
+      todos: this.todos,
+      isUnfinished: this.isUnfinished
+    }));
+    $('#' + open).addClass('in');
+  }
 
-//When the DB is ready let the controller render
-DB.ready(TodoController.onReady);
+  //Sets up the template
+  onReady() {
+    var hash = location.hash;
+    if (hash != '' && hash != '#') {
+      hash = hash.substring(1);
+      if (hash == this.listId)
+        return;
+      this.listId = hash;
+    } else if (localStorage["listId"]) {
+      this.listId = localStorage["listId"];
+    } else {
+      this.listId = DB.util.uuid();
+      localStorage["listId"] = this.listId;
+    }
+
+    location.hash = this.listId;
+    //Ignore the first hash change
+    setTimeout(() => $(window).on('hashchange', () => this.onReady()));
+    $("#shareURL").val(location);
+    var source = $('#todo-template').html();
+    this.template = Handlebars.compile(source);
+    this.showUnfinished();
+  }
+}
+
+var TodoController = new TodoCtrl({}, false, null, null);
+
+DB.connect("toodle").then(() => TodoController.onReady());
 
 //Boilerplate helper code for date formatting
 Handlebars.registerHelper('pretty', function(date) {
@@ -158,5 +159,15 @@ Handlebars.registerHelper('pretty', function(date) {
 Handlebars.registerHelper('diff', function(from, to) {
   return (from == null || to == null) ? "" : Math.round((to - from) / 1000) + " s";
 });
-//Fixes an iOS bug that causes click delay 
+Handlebars.registerHelper('sum', function(activities) {
+  if (activities == null || activities.length == 0 ) {
+    return "";
+  } else {
+    var sum = Math.round(activities
+            .map((a) => a.end ? (a.end - a.start) : 0)
+            .reduce((a, b) => a + b, 0) / 1000);
+    return sum != 0 ? sum + " s" : "";
+  }
+});
+//Fixes an iOS bug that causes click delay
 FastClick.attach(document.body);

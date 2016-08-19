@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Your App</title>
+  <title>Tutorial App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- build:css all.min.css -->
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootswatch/3.3.2/flatly/bootstrap.min.css">
@@ -14,22 +14,22 @@
   <div class="container">
     <div class="header">
       <ul class="nav nav-pills pull-right">
-        <li><a href="#" data-toggle="modal" data-target="#share">Share List <span class="glyphicon glyphicon-share"></span></a></li>
+        <li><a href="#" data-toggle="modal" data-target="#share">Share <span class="hidden-xs">List</span> <span class="glyphicon glyphicon-share"></span></a></li>
       </ul>
-      <h3>Your App <small class="hidden-xs">The Time-Tracking Todo List</small></h3>
+      <h3>Tutorial App <small class="hidden-xs">The Time-Tracking Todo List</small></h3>
     </div>
 
     <div class="marketing">
       <!-- The button group to change visibility of Todos -->
       <div class="btn-group btn-group-justified" data-toggle="buttons">
         <label class="btn btn-primary active">
-          <input type="radio" onchange="TodoController.showUnfinished()" autocomplete="off" checked>Unfinished
+          <input type="radio" onchange="TodoController.showUnfinished()" autocomplete="off" checked><span class="glyphicon glyphicon glyphicon-unchecked"></span>&nbsp; Todo
         </label>
         <label class="btn btn-primary">
-          <input type="radio" onchange="TodoController.showDone()" autocomplete="off">Done
+          <input type="radio" onchange="TodoController.showDone()" autocomplete="off"><span class="glyphicon glyphicon-check"></span>&nbsp; Done
         </label>
         <label class="btn btn-primary">
-          <input type="radio" onchange="TodoController.showAll()" autocomplete="off">All
+          <input type="radio" onchange="TodoController.showAll()" autocomplete="off"><span class="glyphicon glyphicon glyphicon glyphicon-align-justify"></span>&nbsp; All
         </label>
       </div>
 
@@ -69,8 +69,8 @@
             <span class="glyphicon glyphicon-trash"></span>
           </button>
           {{else}}
-          <button type="button" onclick="TodoController.toggleWork('{{id}}')" class="btn {{#if active}}btn-warning{{else}}start{{/if}}">
-            <span class="glyphicon {{#if active}}glyphicon-remove{{else}}glyphicon-circle-arrow-right{{/if}}"></span> {{#if active}}Stop{{else}}Start{{/if}} <span class="hidden-xs">Work</span>
+          <button onclick="TodoController.toggleWork('{{id}}');" class="btn {{#if active}}btn-default{{else}}start{{/if}}">
+            <span class="glyphicon {{#if active}}glyphicon glyphicon-pause{{else}}glyphicon glyphicon-play{{/if}}"></span> {{#if active}}Stop Work{{else}}Start Work{{/if}}
           </button>
           <button type="button" onclick="TodoController.done('{{id}}')" class="btn btn-success">
             <span class="glyphicon glyphicon-ok"></span>
@@ -81,8 +81,9 @@
         <!-- The name of each Todo -->
         <div class="panel-heading">
           <h4 class="panel-title">
-          <a class="collapsed" data-toggle="collapse" data-parent="#tablist" href="#{{key}}">{{name}}</a>
-        </h4>
+            <!-- The collapsible list of all past activities-->
+            <a class="collapsed" data-toggle="collapse" href="#{{key}}">{{name}} <small>{{sum activities}}</small></a>
+          </h4>
         </div>
 
         <!-- The collapsible list of all past activities-->
@@ -90,7 +91,7 @@
           <div class="panel-body">
             <table class="table table-condensed table-striped">
               <tr><th>From</th><th>To</th><th>Time spent</th></tr>
-              {{#each activities.array}}
+              {{#each activities}}
               <tr>
                 <td>{{pretty start}}</td>
                 <td>{{pretty end}}</td>
@@ -101,6 +102,10 @@
             </table>
           </div>
         </div>
+      </div>
+      {{else}}
+      <div class="panel-body">
+        <p class="text-muted text-center">No items here.</p>
       </div>
       {{/each}}
     </div>
@@ -114,12 +119,14 @@
   </script>
   
   <!-- build:js all.min.js -->
-  <script type="text/javascript" src="http://www.baqend.com/js-sdk/1.0.0/baqend.min.js"></script>
+  <script type="text/javascript" src="https://baqend.global.ssl.fastly.net/js-sdk/2.2.1/baqend.min.js"></script>
   <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.0/handlebars.min.js"></script>
   <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
   <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="app.js"></script>
+  <script type="text/javascript" src="libs/js/typed.min.js"></script>
+  <script type="text/javascript" src="typed.js"></script>
   <!-- /build -->
 
   <!-- build:js:iframe inline typed.js --><!-- /build -->

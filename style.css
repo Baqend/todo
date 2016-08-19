@@ -6,9 +6,10 @@
     height: 38px;
 }
 #todos .active .panel-heading {
-    background-color: #f39c12;
-    color: white;
-    font-weight: bold;
+    background-color: rgba(0,0,0,0.05);
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
 }
 #todos .panel-heading {
     background-color: white;
