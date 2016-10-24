@@ -138,13 +138,8 @@ class TodoCtrl {
       localStorage["listId"] = this.listId;
     }
 
-    if (history) {
-      //replace the location, so the back button works properly
-      history.replaceState({}, document.title, '#' + this.listId);
-    } else {
-      //fallback behaviour for legacy browsers
-      location.hash = this.listId;
-    }
+    //replace the location, so the back button works properly
+    location.replace('#' + this.listId);
 
     //Ignore the first hash change
     setTimeout(() => $(window).on('hashchange', () => this.onReady()));
