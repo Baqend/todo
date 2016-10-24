@@ -138,7 +138,14 @@ class TodoCtrl {
       localStorage["listId"] = this.listId;
     }
 
-    location.hash = this.listId;
+    if (history) {
+      //replace the location, so the back button works properly
+      history.replaceState({}, document.title, '#' + this.listId);
+    } else {
+      //fallback behaviour for legacy browsers
+      location.hash = this.listId;
+    }
+
     //Ignore the first hash change
     setTimeout(() => $(window).on('hashchange', () => this.onReady()));
     $("#shareURL").val(location);
