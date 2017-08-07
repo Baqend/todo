@@ -152,6 +152,7 @@ class TodoCtrl {
 
 var TodoController = new TodoCtrl({}, false, null, null);
 
+//Change "toodle" to your own app name here!
 DB.connect("toodle").then(() => TodoController.onReady());
 
 //Boilerplate helper code for date formatting

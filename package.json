@@ -1,13 +1,16 @@
 {
   "name": "Baqend-Todo-App",
   "version": "1.0.0",
-  "description": "",
-  "main": "Gruntfile.js",
+  "description": "A todo app based on Baqend",
   "scripts": {
-    "baqend": "baqend"
+    "login": "baqend login",
+    "deploy": "baqend deploy -f dist",
+    "schema": "baqend schema",
+    "start": "grunt",
+    "build": "grunt dist"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Baqend GmbH",
+  "license": "MIT",
   "devDependencies": {
     "baqend": "^2.8.2",
     "babel-preset-es2015": "^6.13.2",

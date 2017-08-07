@@ -12,19 +12,41 @@ Do you have questions, a future request or did you find a bug? Open a [ticket](h
 Installation
 -------
 
-    npm install -g grunt-cli
     git clone https://github.com/Baqend/todo.git .
     npm install
-    grunt
+    npm start
+    
+Connect to Baqend
+-------
+
+To connect to your Baqend app, you run
+
+    npm run login
+    
+Then, simply follow the instructions on the screen.
     
 Setup with your own Baqend instance
 -------
 
-1. Open the Baqend Dashboard.
-2. On the left side navigate to the *API Explorer* 
-3. Expand the *POST /schema* tab under the *schema* category
-4. Paste the content of the [schema.json](schema.json) in to the *body* field and submit the form.
-5. Change the connect call in the [app.js](app.js) to `DB.connect(<your app name>)`
+1.  Apply the schema of the todo app on your Baqend app instance.
+    Therefore, you run 
+   
+        npm run schema upload <your app name>
+
+2.  Change the connect call in the [app.js line 156](app.js) to `DB.connect(<your app name>)`
+
+Deploy to your own Baqend instance
+-------
+
+1.  Build your project
+
+        npm run build
+    
+2.  Then, deploy the built project code to Baqend using
+
+        npm run deploy <your app name>
+    
+and all Baqend code and files will be uploaded to Baqend!
 
 License
 -------
