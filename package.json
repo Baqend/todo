@@ -1,7 +1,7 @@
 {
-  "name": "Baqend-Todo-App",
+  "name": "@baqend/todo-app",
   "version": "1.0.0",
-  "description": "A todo app based on Baqend",
+  "description": "A todo app built on Baqend",
   "scripts": {
     "login": "baqend login",
     "deploy": "baqend deploy -f dist",

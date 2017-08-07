@@ -1,11 +1,12 @@
-Baqend ToDo-App
-============
+Baqend ToDo App
+===============
+A todo app built on Baqend.
 
-![Baqend.com](http://www.baqend.com/guide/img/baqend_logo.svg)
+[![Baqend.com](https://www.baqend.com/guide/img/baqend_logo.svg)](https://www.baqend.com)
 
-Visit our website [www.baqend.com](http://www.baqend.com)
+Visit our website [www.baqend.com](https://www.baqend.com)
 
-Read the [Baqend Guide](http://www.baqend.com/guide/) online
+Read the [Baqend Guide](https://www.baqend.com/guide/) online
 
 Do you have questions, a future request or did you find a bug? Open a [ticket](https://github.com/Baqend/todo/issues). 
 
@@ -14,7 +15,15 @@ Installation
 
     git clone https://github.com/Baqend/todo.git .
     npm install
+
+Start the App
+-------
+
+To start the app, run the following command:
+
     npm start
+    
+Now you can [open the app in your browser.](http://localhost:8050/)  
     
 Connect to Baqend
 -------
