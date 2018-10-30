@@ -3,36 +3,44 @@ class TodoService {
   //load all Todos ordered by completion and name
   static all(listId) {
     return DB.Todo.find()
-        .equal("listId", listId)
-        .ascending("done")
-        .ascending("name")
-        .resultList();
+      .where({"listId": listId})
+      .ascending("done")
+      .ascending("name")
+      .resultList();
   }
 
   //load unfinished Todos
   static unfinished(listId) {
     return DB.Todo.find()
-        .equal("listId", listId)
-        .notEqual("done", true)
-        .resultList();
+      .where({
+        "$and": [{"listId": listId}]
+      })
+      .resultList()
+      .then(todos => {
+        return todos.filter(todo => !todo.done)
+      });
   }
 
   //load finished Todos
   static done(listId) {
     return DB.Todo.find()
-        .equal("listId", listId)
-        .equal("done", true)
-        .resultList();
+      .where({
+        "$and": [{"listId": listId}]
+      })
+      .resultList()
+      .then(todos => {
+        return todos.filter(todo => todo.done)
+      });
   }
 
   //delete a Todo
   static delete(todo) {
-    todo.delete();
+    return todo.delete();
   }
 
   //save a Todo
   static save(todo) {
-    todo.save();
+    return todo.save({depth: true});
   }
 }
 
@@ -72,35 +80,40 @@ class TodoCtrl {
 
   //Deletes a Todo by id
   delete(id) {
-    TodoService.delete(this.todos[id]);
-    delete this.todos[id];
-    this.render();
+    TodoService.delete(this.todos[id]).then((todo) => {
+      delete this.todos[id];
+      this.render();
+    });
   }
 
   //Marks a Todo as done
   done(id) {
     this.todos[id].done = true;
-    TodoService.save(this.todos[id]);
-    if (this.isUnfinished)
-      delete this.todos[id];
-    this.render();
+    TodoService.save(this.todos[id]).then((todo) => {
+      if (this.isUnfinished)
+        delete this.todos[todo.id];
+      this.render();
+    });
   }
 
   //Adds a new Todo by name
   add(name) {
-    var todo = new DB.Todo({
+    const todo = new DB.Todo({
       activities: new DB.List(),
       name: name,
       listId: this.listId
     });
-    TodoService.save(todo);
-    this.todos[todo.id] = todo;
-    this.render();
+
+    TodoService.save(todo).then((todo) => {
+      this.todos[todo.id] = todo;
+      console.log(this.todos);
+      this.render();
+    });
   }
 
   //Starts or stops work on a Todo
   toggleWork(id) {
-    var todo = this.todos[id];
+    let todo = this.todos[id];
     todo.active = !todo.active;
     if (todo.active) {
       todo.activities.unshift(new DB.Activity({
@@ -109,8 +122,9 @@ class TodoCtrl {
     } else {
       todo.activities[0].end = new Date();
     }
-    TodoService.save(todo);
-    this.render();
+    TodoService.save(todo).then(todo => {
+      this.render();
+    });
   }
 
   //Repaints the TodoList
@@ -126,9 +140,9 @@ class TodoCtrl {
   //Sets up the template
   onReady() {
     var hash = location.hash;
-    if (hash != '' && hash != '#') {
+    if (hash !== '' && hash !== '#') {
       hash = hash.substring(1);
-      if (hash == this.listId)
+      if (hash === this.listId)
         return;
       this.listId = hash;
     } else if (localStorage["listId"]) {
@@ -153,23 +167,23 @@ class TodoCtrl {
 var TodoController = new TodoCtrl({}, false, null, null);
 
 //Change "toodle" to your own app name here!
-DB.connect("toodle").then(() => TodoController.onReady());
+DB.connect("http://localhost:8080/v1").then(() => TodoController.onReady());
 
 //Boilerplate helper code for date formatting
-Handlebars.registerHelper('pretty', function(date) {
+Handlebars.registerHelper('pretty', function (date) {
   return date == null ? "" : date.toLocaleString();
 });
-Handlebars.registerHelper('diff', function(from, to) {
+Handlebars.registerHelper('diff', function (from, to) {
   return (from == null || to == null) ? "" : Math.round((to - from) / 1000) + " s";
 });
-Handlebars.registerHelper('sum', function(activities) {
-  if (activities == null || activities.length == 0 ) {
+Handlebars.registerHelper('sum', function (activities) {
+  if (activities == null || activities.length === 0) {
     return "";
   } else {
     var sum = Math.round(activities
-            .map((a) => a.end ? (a.end - a.start) : 0)
-            .reduce((a, b) => a + b, 0) / 1000);
-    return sum != 0 ? sum + " s" : "";
+      .map((a) => a.end ? (a.end - a.start) : 0)
+      .reduce((a, b) => a + b, 0) / 1000);
+    return sum !== 0 ? sum + " s" : "";
   }
 });
 //Fixes an iOS bug that causes click delay

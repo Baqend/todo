@@ -1,5 +1,6 @@
 {
   "class": "/db/Activity",
+  "superClass": "/db/Object",
   "acl": {
     "schemaAdd": {
       "/db/Role/1": "allow"
@@ -8,7 +9,6 @@
       "/db/Role/1": "allow"
     }
   },
-  "embedded": true,
   "fields": {
     "start": {
       "name": "start",
