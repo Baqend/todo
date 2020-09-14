@@ -6,7 +6,7 @@ class TodoService {
       .where({"listId": listId})
       .ascending("done")
       .ascending("name")
-      .resultList();
+      .resultList({depth: 5});
   }
 
   //load unfinished Todos
@@ -15,7 +15,7 @@ class TodoService {
       .where({
         "$and": [{"listId": listId}]
       })
-      .resultList()
+      .resultList({depth: 5})
       .then(todos => {
         return todos.filter(todo => !todo.done)
       });
@@ -27,7 +27,7 @@ class TodoService {
       .where({
         "$and": [{"listId": listId}]
       })
-      .resultList()
+      .resultList({depth: 5})
       .then(todos => {
         return todos.filter(todo => todo.done)
       });
